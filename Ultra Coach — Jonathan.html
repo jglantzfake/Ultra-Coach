@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<!-- saved from url=(0053)file:///Users/jonathanglantz/Desktop/ultra-coach.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ultra Coach">
+<meta name="theme-color" content="#0a0a0a">
+<title>Ultra Coach — Jonathan</title>
+<style>
+:root {
+  --bg: #080808;
+  --surface: #111;
+  --surface2: #161616;
+  --surface3: #1c1c1c;
+  --border: #242424;
+  --border2: #2e2e2e;
+  --green: #a8ff78;
+  --green-dim: rgba(168,255,120,0.15);
+  --yellow: #ffe566;
+  --yellow-dim: rgba(255,229,102,0.12);
+  --red: #ff6b6b;
+  --red-dim: rgba(255,107,107,0.12);
+  --blue: #78c8ff;
+  --blue-dim: rgba(120,200,255,0.12);
+  --orange: #ffaa55;
+  --text: #ececec;
+  --text-mid: #888;
+  --text-dim: #444;
+  --radius: 8px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--bg); color:var(--text); font-family: -apple-system, 'Helvetica Neue', sans-serif; font-size:14px; overscroll-behavior:none; }
+#app { display:flex; flex-direction:column; height:100vh; height:-webkit-fill-available; }
+#content { flex:1; overflow-y:auto; padding:calc(20px + var(--safe-top)) 16px 100px; -webkit-overflow-scrolling:touch; }
+
+/* NAV */
+#navbar { position:fixed; bottom:0; left:0; right:0; background:rgba(8,8,8,0.97); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--border); display:flex; padding-bottom:var(--safe-bottom); z-index:100; }
+.nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:10px 4px 8px; background:none; border:none; color:var(--text-dim); font-size:9px; letter-spacing:0.08em; cursor:pointer; transition:color 0.2s; font-family:-apple-system,sans-serif; }
+.nav-btn.active { color:var(--green); }
+.nav-btn svg { width:22px; height:22px; }
+
+/* TYPOGRAPHY */
+.display { font-size:42px; font-weight:800; letter-spacing:-0.02em; line-height:1; }
+.display span { color:var(--green); }
+.eyebrow { font-size:10px; letter-spacing:0.15em; color:var(--text-dim); text-transform:uppercase; margin-bottom:4px; font-weight:500; }
+.page-header { margin-bottom:20px; }
+
+/* CARDS */
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; overflow:hidden; }
+.card-header { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); }
+.card-title { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-mid); font-weight:600; }
+.card-body { padding:14px 16px; }
+
+/* TODAY CARD */
+.today-card { background:var(--surface); border:1px solid var(--border); border-top:2px solid var(--green); border-radius:var(--radius); margin-bottom:16px; overflow:hidden; }
+.today-header { padding:16px; border-bottom:1px solid var(--border); }
+.today-date { font-size:28px; font-weight:800; letter-spacing:-0.02em; line-height:1; margin-bottom:4px; }
+.today-session { font-size:13px; color:var(--text-mid); font-weight:400; }
+.session-tag { display:inline-block; font-size:9px; letter-spacing:0.08em; padding:3px 8px; border-radius:3px; margin-top:8px; font-weight:600; }
+.tag-run { background:var(--green-dim); color:var(--green); border:1px solid rgba(168,255,120,0.25); }
+.tag-strength { background:rgba(255,170,85,0.12); color:var(--orange); border:1px solid rgba(255,170,85,0.25); }
+.tag-bike { background:var(--blue-dim); color:var(--blue); border:1px solid rgba(120,200,255,0.25); }
+.tag-recovery { background:var(--surface2); color:var(--text-mid); border:1px solid var(--border); }
+.tag-iso { background:var(--red-dim); color:var(--red); border:1px solid rgba(255,107,107,0.25); }
+
+/* WORKOUT */
+.workout-section { padding:12px 16px; border-bottom:1px solid var(--border); }
+.workout-section:last-child { border-bottom:none; }
+.workout-section-label { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; font-weight:600; }
+.workout-item { display:flex; gap:10px; margin-bottom:7px; font-size:13px; line-height:1.4; color:var(--text-mid); }
+.workout-item::before { content:'—'; color:var(--text-dim); flex-shrink:0; font-size:11px; margin-top:2px; }
+.workout-item strong { color:var(--text); font-weight:600; }
+.accent-green { color:var(--green); }
+.accent-yellow { color:var(--yellow); }
+.accent-red { color:var(--red); }
+
+/* STATS */
+.stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+.stat-box { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:12px 10px; text-align:center; }
+.stat-value { font-size:26px; font-weight:800; color:var(--green); line-height:1; margin-bottom:3px; }
+.stat-label { font-size:9px; letter-spacing:0.08em; color:var(--text-dim); text-transform:uppercase; font-weight:600; }
+
+/* CHECK-IN */
+.checkin-question { margin-bottom:22px; }
+.checkin-label { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; display:block; }
+.checkin-sub { font-size:11px; color:var(--text-dim); margin-bottom:10px; display:block; }
+.slider-track { display:flex; gap:5px; flex-wrap:wrap; }
+.slider-btn { flex:1; min-width:34px; height:42px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text-mid); font-size:13px; font-weight:500; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; font-family:-apple-system,sans-serif; }
+.slider-btn.sel-green { background:var(--green-dim); border-color:var(--green); color:var(--green); }
+.slider-btn.sel-yellow { background:var(--yellow-dim); border-color:var(--yellow); color:var(--yellow); }
+.slider-btn.sel-red { background:var(--red-dim); border-color:var(--red); color:var(--red); }
+.toggle-row { display:flex; gap:8px; }
+.toggle-btn { flex:1; height:44px; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text-mid); font-size:12px; letter-spacing:0.04em; font-weight:600; cursor:pointer; transition:all 0.15s; font-family:-apple-system,sans-serif; }
+.toggle-btn.sel-green { background:var(--green-dim); border-color:var(--green); color:var(--green); }
+.toggle-btn.sel-yellow { background:var(--yellow-dim); border-color:var(--yellow); color:var(--yellow); }
+.toggle-btn.sel-red { background:var(--red-dim); border-color:var(--red); color:var(--red); }
+
+/* SUBMIT */
+.submit-btn { width:100%; height:52px; background:var(--green); border:none; border-radius:var(--radius); color:#080808; font-size:17px; font-weight:800; letter-spacing:0.04em; cursor:pointer; margin-top:8px; transition:opacity 0.2s; font-family:-apple-system,sans-serif; }
+.submit-btn:active { opacity:0.8; }
+.submit-btn.secondary { background:var(--surface2); color:var(--text-mid); border:1px solid var(--border); }
+
+/* ALERTS */
+.alert { padding:12px 14px; border-radius:6px; font-size:12px; line-height:1.5; margin-bottom:12px; }
+.alert-yellow { background:var(--yellow-dim); border:1px solid rgba(255,229,102,0.2); color:var(--yellow); }
+.alert-green { background:var(--green-dim); border:1px solid rgba(168,255,120,0.2); color:var(--green); }
+.alert-red { background:var(--red-dim); border:1px solid rgba(255,107,107,0.2); color:var(--red); }
+
+/* WEEK */
+.week-day-row { display:flex; align-items:center; gap:12px; padding:13px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+.week-day-row:last-child { border-bottom:none; }
+.week-day-row:active { background:var(--surface2); }
+.week-day-row.today-row { background:rgba(168,255,120,0.04); }
+.week-day-date { font-size:20px; font-weight:800; color:var(--text-mid); width:54px; flex-shrink:0; letter-spacing:-0.01em; }
+.week-day-row.today-row .week-day-date { color:var(--green); }
+.week-day-info { flex:1; }
+.week-day-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; }
+.week-day-sub { font-size:11px; color:var(--text-dim); }
+.dot { width:8px; height:8px; border-radius:50%; background:var(--border2); flex-shrink:0; }
+.dot.done { background:var(--green); }
+.dot.current { background:var(--yellow); }
+
+/* TRENDS */
+.trend-block { padding:14px 16px; border-bottom:1px solid var(--border); }
+.trend-block:last-child { border-bottom:none; }
+.trend-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.trend-name { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-mid); font-weight:600; }
+.trend-current { font-size:24px; font-weight:800; color:var(--green); }
+.chart-wrap { height:80px; position:relative; }
+.chart-wrap svg { width:100%; height:100%; }
+.chart-labels { display:flex; justify-content:space-between; font-size:9px; color:var(--text-dim); margin-top:3px; font-weight:500; }
+
+/* SUPPLEMENTS */
+.supp-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+.supp-item:last-child { border-bottom:none; }
+.supp-item:active { background:var(--surface2); }
+.supp-check { width:22px; height:22px; border:1.5px solid var(--border2); border-radius:5px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.supp-check.on { background:var(--green); border-color:var(--green); }
+.supp-check.on::after { content:''; width:11px; height:6px; border-left:2px solid #080808; border-bottom:2px solid #080808; transform:rotate(-45deg) translateY(-2px); display:block; }
+.supp-name { font-size:13px; color:var(--text); flex:1; }
+.supp-time { font-size:9px; letter-spacing:0.08em; color:var(--text-dim); font-weight:600; }
+
+/* COUNTDOWN */
+.countdown-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; margin-bottom:12px; display:flex; align-items:center; gap:16px; }
+.countdown-days { font-size:54px; font-weight:800; color:var(--green); line-height:1; flex-shrink:0; letter-spacing:-0.02em; }
+.countdown-label { font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:3px; font-weight:600; }
+.countdown-race { font-size:14px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.countdown-date { font-size:12px; color:var(--text-dim); }
+
+/* HISTORY */
+.log-entry { padding:12px 16px; border-bottom:1px solid var(--border); }
+.log-entry:last-child { border-bottom:none; }
+.log-date { font-size:10px; letter-spacing:0.1em; color:var(--text-dim); margin-bottom:6px; font-weight:600; }
+.log-chips { display:flex; gap:6px; flex-wrap:wrap; }
+.chip { font-size:10px; background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:3px 8px; color:var(--text-mid); font-weight:500; }
+.chip-green { color:var(--green); border-color:rgba(168,255,120,0.2); }
+.log-notes { margin-top:6px; font-size:12px; color:var(--text-dim); font-style:italic; }
+
+/* MODAL */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.25s; }
+.modal-overlay.open { opacity:1; pointer-events:all; }
+.modal-sheet { width:100%; background:var(--surface); border-radius:16px 16px 0 0; border-top:1px solid var(--border); max-height:88vh; overflow-y:auto; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1); padding-bottom:calc(24px + var(--safe-bottom)); }
+.modal-overlay.open .modal-sheet { transform:translateY(0); }
+.modal-handle { width:36px; height:4px; background:var(--border2); border-radius:2px; margin:12px auto 16px; }
+.modal-title { font-size:26px; font-weight:800; letter-spacing:-0.01em; padding:0 20px 14px; border-bottom:1px solid var(--border); margin-bottom:4px; }
+.modal-body { padding:16px 20px 8px; }
+
+/* MISC */
+.page { display:none; }
+.page.active { display:block; animation:fadeUp 0.2s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.section-label { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-dim); padding:12px 4px 6px; font-weight:600; }
+.empty-state { text-align:center; padding:40px 20px; color:var(--text-dim); }
+.empty-icon { font-size:36px; margin-bottom:10px; opacity:0.4; }
+.empty-text { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; }
+textarea.notes-input { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:6px; color:var(--text); font-family:-apple-system,sans-serif; font-size:13px; padding:12px; resize:none; height:90px; line-height:1.5; }
+textarea.notes-input:focus { outline:none; border-color:var(--green); }
+.divider { height:1px; background:var(--border); margin:4px 0; }
+</style>
+</head>
+<body style="overscroll-behavior-x: auto;">
+<div id="app">
+  <div id="content">
+
+    <!-- TODAY -->
+    <div id="page-today" class="page active">
+      <div class="page-header">
+        <div class="eyebrow">JONATHAN · 100-MILE ULTRA</div>
+        <div class="display">TO<span>DAY</span></div>
+      </div>
+      <div class="countdown-card">
+        <div class="countdown-days" id="cd-days">241</div>
+        <div>
+          <div class="countdown-label">Days Until Race</div>
+          <div class="countdown-race">100-Mile Ultra</div>
+          <div class="countdown-date">January 16, 2027</div>
+        </div>
+      </div>
+      <div class="today-card">
+        <div class="today-header">
+          <div class="today-date" id="t-date">WED MAY 21</div>
+          <div class="today-session" id="t-session">Easy Run 2.0 Miles + Tendon Load</div>
+          <div class="session-tag tag-run" id="t-tag">RUN DAY</div>
+        </div>
+        <div id="t-workout"><div class="workout-section"><div class="workout-section-label">PRE-SESSION</div><div class="workout-item"><span>Collagen 15g + Vit C 500mg — 45 min before</span></div><div class="workout-item"><span>Light snack (banana, oats, toast)</span></div></div><div class="workout-section"><div class="workout-section-label">RUN</div><div class="workout-item"><span>2.0 miles — single session only</span></div><div class="workout-item"><span>Sub-135 BPM strictly — walk if HR climbs above 135</span></div><div class="workout-item"><span>Conversational pace throughout</span></div></div><div class="workout-section"><div class="workout-section-label">POST-RUN TENDON (3-0-3 tempo)</div><div class="workout-item"><span>Eccentric heel drops on curb: 3×15 (5 sec down)</span></div><div class="workout-item"><span>Seated tibialis raises: 3×20</span></div><div class="workout-item"><span>Terminal knee extension (band): 3×15</span></div></div><div class="workout-section"><div class="workout-section-label">DOWN-REGULATION</div><div class="workout-item"><span>5 min physiological sigh breathwork — mandatory</span></div><div class="workout-item"><span>Ice 10 min on knee if any swelling above baseline</span></div></div><div class="workout-section"><div class="workout-section-label">⚠ RULES</div><div class="workout-item"><span>ONE STIMULUS ONLY — no bike, no second session</span></div><div class="workout-item"><span>Stop immediately if pain exceeds 4/10</span></div><div class="workout-item"><span>Creatine 5g with dinner</span></div></div></div>
+      </div>
+      <div class="section-label">THIS WEEK</div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-value" id="s-miles">0.0</div><div class="stat-label">Miles</div></div>
+        <div class="stat-box"><div class="stat-value" id="s-sess">0</div><div class="stat-label">Sessions</div></div>
+        <div class="stat-box"><div class="stat-value" id="s-sleep">—</div><div class="stat-label">Avg Sleep</div></div>
+      </div>
+      <div class="section-label">TODAY'S SUPPLEMENTS</div>
+      <div class="card" id="supp-list"><div class="supp-item" onclick="toggleSupp(&#39;vitd&#39;)"><div class="supp-check " id="sc-vitd"></div><span class="supp-name">Vitamin D3 2,000–5,000 IU</span><span class="supp-time">BREAKFAST</span></div><div class="supp-item" onclick="toggleSupp(&#39;vitb&#39;)"><div class="supp-check " id="sc-vitb"></div><span class="supp-name">Vitamin B Complex</span><span class="supp-time">BREAKFAST</span></div><div class="supp-item" onclick="toggleSupp(&#39;zinc&#39;)"><div class="supp-check " id="sc-zinc"></div><span class="supp-name">Zinc 15-25mg</span><span class="supp-time">BREAKFAST</span></div><div class="supp-item" onclick="toggleSupp(&#39;omega&#39;)"><div class="supp-check " id="sc-omega"></div><span class="supp-name">Omega-3 Fish Oil 2-3g EPA+DHA</span><span class="supp-time">BREAKFAST</span></div><div class="supp-item" onclick="toggleSupp(&#39;collagen&#39;)"><div class="supp-check " id="sc-collagen"></div><span class="supp-name">Collagen 15g + Vit C 500mg</span><span class="supp-time">45 MIN PRE</span></div><div class="supp-item" onclick="toggleSupp(&#39;creatine&#39;)"><div class="supp-check " id="sc-creatine"></div><span class="supp-name">Creatine 5g</span><span class="supp-time">DINNER</span></div><div class="supp-item" onclick="toggleSupp(&#39;protein&#39;)"><div class="supp-check " id="sc-protein"></div><span class="supp-name">40-50g Protein post-training</span><span class="supp-time">POST-SESSION</span></div><div class="supp-item" onclick="toggleSupp(&#39;mag&#39;)"><div class="supp-check " id="sc-mag"></div><span class="supp-name">Magnesium Glycinate 200-400mg</span><span class="supp-time">PRE-BED</span></div></div>
+      <button class="submit-btn" id="checkin-open-btn" onclick="openCheckin()">LOG TODAY'S CHECK-IN</button>
+    </div>
+
+    <!-- WEEK -->
+    <div id="page-week" class="page">
+      <div class="page-header">
+        <div class="eyebrow">PHASE 2 · WEEK 3</div>
+        <div class="display">MAY <span>21–26</span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-value">4.5</div><div class="stat-label">Target Mi</div></div>
+        <div class="stat-box"><div class="stat-value">135</div><div class="stat-label">Max BPM</div></div>
+        <div class="stat-box"><div class="stat-value">9+</div><div class="stat-label">Sleep Hrs</div></div>
+      </div>
+      <div class="alert alert-yellow">⚠ Sunday 2.5mi is CONDITIONAL — Wednesday knee pain ≤1 and swelling 0 required.</div>
+      <div class="card" id="week-list"><div class="week-day-row " onclick="openDay(&#39;2026-05-21&#39;)"><div class="week-day-date">WED MAY</div><div class="week-day-info"><div class="week-day-name">Easy Run 2.0 Miles + Tendon Load</div><div class="week-day-sub"><span class="session-tag tag-run" style="font-size:8px;padding:2px 6px;">RUN DAY</span> · 2 mi</div></div><div class="dot "></div></div><div class="week-day-row " onclick="openDay(&#39;2026-05-22&#39;)"><div class="week-day-date">THU MAY</div><div class="week-day-info"><div class="week-day-name">Full Body Isotonic Strength + Yoga</div><div class="week-day-sub"><span class="session-tag tag-strength" style="font-size:8px;padding:2px 6px;">STRENGTH</span></div></div><div class="dot "></div></div><div class="week-day-row " onclick="openDay(&#39;2026-05-23&#39;)"><div class="week-day-date">FRI MAY</div><div class="week-day-info"><div class="week-day-name">Zone 2 Bike + Active Recovery</div><div class="week-day-sub"><span class="session-tag tag-bike" style="font-size:8px;padding:2px 6px;">BIKE DAY</span></div></div><div class="dot "></div></div><div class="week-day-row " onclick="openDay(&#39;2026-05-24&#39;)"><div class="week-day-date">SAT MAY</div><div class="week-day-info"><div class="week-day-name">Full Recovery + Nutrition Focus</div><div class="week-day-sub"><span class="session-tag tag-recovery" style="font-size:8px;padding:2px 6px;">RECOVERY</span></div></div><div class="dot "></div></div><div class="week-day-row " onclick="openDay(&#39;2026-05-25&#39;)"><div class="week-day-date">SUN MAY</div><div class="week-day-info"><div class="week-day-name">Long Run 2.5 Miles — Conditional</div><div class="week-day-sub"><span class="session-tag tag-run" style="font-size:8px;padding:2px 6px;">RUN DAY</span> · 2.5 mi</div></div><div class="dot "></div></div><div class="week-day-row " onclick="openDay(&#39;2026-05-26&#39;)"><div class="week-day-date">MON MAY</div><div class="week-day-info"><div class="week-day-name">Isometrics + Contrast Therapy + Week Checkpoint</div><div class="week-day-sub"><span class="session-tag tag-iso" style="font-size:8px;padding:2px 6px;">ISO DAY</span></div></div><div class="dot "></div></div></div>
+    </div>
+
+    <!-- TRENDS -->
+    <div id="page-trends" class="page">
+      <div class="page-header">
+        <div class="eyebrow">RECOVERY BIOMARKERS</div>
+        <div class="display">TREND<span>S</span></div>
+      </div>
+      <div class="card" id="trends-content"><div class="empty-state"><div class="empty-icon">📈</div><div class="empty-text">Log check-ins to see trends</div></div></div>
+    </div>
+
+    <!-- LOG -->
+    <div id="page-history" class="page">
+      <div class="page-header">
+        <div class="eyebrow">ALL CHECK-INS</div>
+        <div class="display">LOG</div>
+      </div>
+      <div class="card" id="history-content"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No check-ins yet</div></div></div>
+    </div>
+
+  </div>
+
+  <nav id="navbar">
+    <button class="nav-btn active" onclick="showPage(&#39;today&#39;,this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"></path></svg>
+      TODAY
+    </button>
+    <button class="nav-btn" onclick="showPage(&#39;week&#39;,this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+      WEEK
+    </button>
+    <button class="nav-btn" onclick="showPage(&#39;trends&#39;,this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      TRENDS
+    </button>
+    <button class="nav-btn" onclick="showPage(&#39;history&#39;,this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="9"></circle></svg>
+      LOG
+    </button>
+  </nav>
+</div>
+
+<!-- CHECK-IN MODAL -->
+<div class="modal-overlay" id="ci-modal" onclick="overlayClose(event,&#39;ci-modal&#39;)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">DAILY CHECK-IN</div>
+    <div class="modal-body" id="ci-form"></div>
+  </div>
+</div>
+
+<!-- DAY DETAIL MODAL -->
+<div class="modal-overlay" id="day-modal" onclick="overlayClose(event,&#39;day-modal&#39;)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div id="day-modal-body"></div>
+  </div>
+</div>
+
+<script>
+var RACE = new Date('2027-01-16');
+
+var WEEK = [
+  { date:'WED MAY 21', key:'2026-05-21', day:'Wednesday', session:'Easy Run 2.0 Miles + Tendon Load', tag:'RUN DAY', tagClass:'tag-run', miles:2.0,
+    detail:[
+      {label:'PRE-SESSION', items:['Collagen 15g + Vit C 500mg — 45 min before','Light snack (banana, oats, toast)']},
+      {label:'RUN', items:['2.0 miles — single session only','Sub-135 BPM strictly — walk if HR climbs above 135','Conversational pace throughout']},
+      {label:'POST-RUN TENDON (3-0-3 tempo)', items:['Eccentric heel drops on curb: 3×15 (5 sec down)','Seated tibialis raises: 3×20','Terminal knee extension (band): 3×15']},
+      {label:'DOWN-REGULATION', items:['5 min physiological sigh breathwork — mandatory','Ice 10 min on knee if any swelling above baseline']},
+      {label:'⚠ RULES', items:['ONE STIMULUS ONLY — no bike, no second session','Stop immediately if pain exceeds 4/10','Creatine 5g with dinner']}
+    ]},
+  { date:'THU MAY 22', key:'2026-05-22', day:'Thursday', session:'Full Body Isotonic Strength + Yoga', tag:'STRENGTH', tagClass:'tag-strength', miles:0,
+    detail:[
+      {label:'PRE-SESSION', items:['Collagen 15g + Vit C 500mg — 45 min before']},
+      {label:'STRENGTH CIRCUIT (3-0-3 tempo)', items:['Goblet Squat: 4×10 — hold at bottom','Romanian Deadlift: 3×10 — hinge focus','Step-downs (6-8"): 3×12 each leg — slow, controlled','Hip Thrust: 3×12 — squeeze glutes, 1 sec hold','Dead Bug: 3×10 — lower back flat throughout']},
+      {label:'MOBILITY', items:['30 min yoga — posterior chain focus','Pigeon pose: 90 sec each side','Couch stretch: 90 sec each side','Cat-cow: 2 min spinal decompression']},
+      {label:'DOWN-REGULATION', items:['5 min physiological sigh breathwork after']},
+      {label:'NOTES', items:['Rest 60-90 sec between sets','Note knee response to squats and step-downs (0-10)','Step-downs = axial loading = bone density']}
+    ]},
+  { date:'FRI MAY 23', key:'2026-05-23', day:'Friday', session:'Zone 2 Bike + Active Recovery', tag:'BIKE DAY', tagClass:'tag-bike', miles:0,
+    detail:[
+      {label:'BIKE', items:['35-40 min Zone 2 — sub-150 BPM','Moderate resistance — smooth cadence','Purpose: blood flow and knee fluid drainage']},
+      {label:'MOBILITY', items:['Ankle mobility circuit: 10 min','Calf stretch: 60 sec each side','Toe raises: 3×15']},
+      {label:'DOWN-REGULATION', items:['5 min physiological sigh breathwork after']},
+      {label:'NOTES', items:['Active recovery day — not a fitness day','Compare knee feel to Wednesday run','Log Garmin sleep score']}
+    ]},
+  { date:'SAT MAY 24', key:'2026-05-24', day:'Saturday', session:'Full Recovery + Nutrition Focus', tag:'RECOVERY', tagClass:'tag-recovery', miles:0,
+    detail:[
+      {label:'MOVEMENT ONLY', items:['10 min sunlight outside — no sunglasses','20 min easy walk — flat terrain only','Legs up the wall: 10 min — drains knee fluid']},
+      {label:'MOBILITY', items:['Hip mobility circuit: 10 min','Ankle mobility circuit: 10 min']},
+      {label:'NUTRITION FOCUS', items:['8 eggs','Half avocado','Steak if on rotation','Omega-3 fish oil 2-3g','30g slow protein 3-5 hrs before bed']},
+      {label:'SLEEP TARGET', items:['9.5 hours tonight — best opportunity of the week','In bed by 9:30 PM','No screens after 9 PM']}
+    ]},
+  { date:'SUN MAY 25', key:'2026-05-25', day:'Sunday', session:'Long Run 2.5 Miles — Conditional', tag:'RUN DAY', tagClass:'tag-run', miles:2.5,
+    detail:[
+      {label:'GATE CHECK', items:['Wednesday knee scores must be clean to run 2.5mi','Pain ≤1/10 and swelling 0 on Thursday AM','If not clean → run 2.0 miles instead']},
+      {label:'PRE-SESSION', items:['Collagen 15g + Vit C 500mg — 45 min before']},
+      {label:'RUN', items:['2.5 miles — sub-135 BPM','Walk breaks as needed — flat terrain only','Target: 80%+ of run at jogging pace sub-135 BPM (was 75% last week)']},
+      {label:'POST-RUN TENDON', items:['Eccentric heel drops: 3×15 (5 sec down)','Seated tibialis raises: 3×20','5 min physiological sigh after']},
+      {label:'ONE STIMULUS', items:['Nothing else today']}
+    ]},
+  { date:'MON MAY 26', key:'2026-05-26', day:'Monday', session:'Isometrics + Contrast Therapy + Week Checkpoint', tag:'ISO DAY', tagClass:'tag-iso', miles:0,
+    detail:[
+      {label:'PRE-SESSION', items:['Collagen 15g + Vit C 500mg — 45 min before']},
+      {label:'ISOMETRICS', items:['Wall Sit 60-70°: 3×45 sec','Single Leg Press Hold: 3×45 sec each leg','Seated Calf Raise Hold: 3×30 sec','VMO Squeeze (towel under knee): 3×45 sec']},
+      {label:'CONTRAST THERAPY (if available)', items:['2 min hot / 1 min cold × 3 cycles']},
+      {label:'WEEK CHECKPOINT', items:['Review total miles vs 4.5 target','Review knee trend across all sessions','Sleep average this week vs 83 last week','Collagen compliance: 100% or not?','Bring all data to Wednesday check-in (May 28)']}
+    ]}
+];
+
+var SUPPS = [
+  {id:'vitd', name:'Vitamin D3 2,000–5,000 IU', time:'BREAKFAST'},
+  {id:'vitb', name:'Vitamin B Complex', time:'BREAKFAST'},
+  {id:'zinc', name:'Zinc 15-25mg', time:'BREAKFAST'},
+  {id:'omega', name:'Omega-3 Fish Oil 2-3g EPA+DHA', time:'BREAKFAST'},
+  {id:'collagen', name:'Collagen 15g + Vit C 500mg', time:'45 MIN PRE'},
+  {id:'creatine', name:'Creatine 5g', time:'DINNER'},
+  {id:'protein', name:'40-50g Protein post-training', time:'POST-SESSION'},
+  {id:'mag', name:'Magnesium Glycinate 200-400mg', time:'PRE-BED'}
+];
+
+var ciData = {};
+
+function gs(k, fb) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : (fb !== undefined ? fb : null); } catch(e) { return fb !== undefined ? fb : null; } }
+function ss(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+function todayKey() { var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function todayEntry() { var k = todayKey(); for (var i=0; i<WEEK.length; i++) { if (WEEK[i].key === k) return WEEK[i]; } return WEEK[0]; }
+
+function init() {
+  var diff = Math.ceil((RACE - new Date()) / 86400000);
+  document.getElementById('cd-days').textContent = diff;
+  renderToday();
+  renderSupps();
+  renderWeek();
+  renderTrends();
+  renderHistory();
+}
+
+function renderToday() {
+  var e = todayEntry();
+  document.getElementById('t-date').textContent = e.date;
+  document.getElementById('t-session').textContent = e.session;
+  var tg = document.getElementById('t-tag');
+  tg.textContent = e.tag; tg.className = 'session-tag ' + e.tagClass;
+  var w = document.getElementById('t-workout');
+  w.innerHTML = e.detail.map(function(s) {
+    return '<div class="workout-section"><div class="workout-section-label">' + s.label + '</div>' +
+      s.items.map(function(it) { return '<div class="workout-item"><span>' + it + '</span></div>'; }).join('') + '</div>';
+  }).join('');
+  var logs = gs('logs', []);
+  var wk = logs.filter(function(l) { return l.key >= '2026-05-21' && l.key <= '2026-05-26'; });
+  var mi = wk.reduce(function(a, l) { return a + (l.miles || 0); }, 0);
+  var sl = wk.map(function(l) { return l.sleep; }).filter(function(v) { return v !== undefined; });
+  document.getElementById('s-miles').textContent = mi.toFixed(1);
+  document.getElementById('s-sess').textContent = wk.length;
+  document.getElementById('s-sleep').textContent = sl.length ? (sl.reduce(function(a,b){return a+b;},0)/sl.length).toFixed(1) : '—';
+}
+
+function renderSupps() {
+  var k = 'supps-' + todayKey();
+  var checked = gs(k, []);
+  var el = document.getElementById('supp-list');
+  el.innerHTML = SUPPS.map(function(s) {
+    var on = checked.indexOf(s.id) >= 0;
+    return '<div class="supp-item" onclick="toggleSupp(\'' + s.id + '\')">' +
+      '<div class="supp-check ' + (on ? 'on' : '') + '" id="sc-' + s.id + '"></div>' +
+      '<span class="supp-name">' + s.name + '</span>' +
+      '<span class="supp-time">' + s.time + '</span></div>';
+  }).join('');
+}
+
+function toggleSupp(id) {
+  var k = 'supps-' + todayKey();
+  var checked = gs(k, []);
+  var idx = checked.indexOf(id);
+  if (idx < 0) checked.push(id); else checked.splice(idx, 1);
+  ss(k, checked);
+  renderSupps();
+}
+
+function renderWeek() {
+  var today = todayKey();
+  var logs = gs('logs', []);
+  var loggedKeys = logs.map(function(l) { return l.key; });
+  var el = document.getElementById('week-list');
+  el.innerHTML = WEEK.map(function(d) {
+    var isToday = d.key === today;
+    var isDone = loggedKeys.indexOf(d.key) >= 0;
+    var parts = d.date.split(' ');
+    return '<div class="week-day-row ' + (isToday ? 'today-row' : '') + '" onclick="openDay(\'' + d.key + '\')">' +
+      '<div class="week-day-date">' + parts[0] + ' ' + parts[1] + '</div>' +
+      '<div class="week-day-info"><div class="week-day-name">' + d.session + '</div>' +
+      '<div class="week-day-sub"><span class="session-tag ' + d.tagClass + '" style="font-size:8px;padding:2px 6px;">' + d.tag + '</span>' +
+      (d.miles > 0 ? ' · ' + d.miles + ' mi' : '') + '</div></div>' +
+      '<div class="dot ' + (isDone ? 'done' : isToday ? 'current' : '') + '"></div></div>';
+  }).join('');
+}
+
+function openDay(key) {
+  var e = null;
+  for (var i=0; i<WEEK.length; i++) { if (WEEK[i].key === key) { e = WEEK[i]; break; } }
+  if (!e) return;
+  var b = document.getElementById('day-modal-body');
+  b.innerHTML = '<div style="padding:0 20px 10px;">' +
+    '<div class="eyebrow" style="padding-top:4px;">' + e.day + '</div>' +
+    '<div style="font-size:22px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;">' + e.session + '</div>' +
+    '<span class="session-tag ' + e.tagClass + '">' + e.tag + '</span></div>' +
+    e.detail.map(function(s) {
+      return '<div class="workout-section"><div class="workout-section-label">' + s.label + '</div>' +
+        s.items.map(function(it) { return '<div class="workout-item"><span>' + it + '</span></div>'; }).join('') + '</div>';
+    }).join('') +
+    '<div style="padding:16px 20px;"><button class="submit-btn" onclick="closeMod(\'day-modal\');openCheckin();">LOG THIS DAY\'S CHECK-IN</button></div>';
+  openMod('day-modal');
+}
+
+function renderTrends() {
+  var logs = gs('logs', []);
+  var el = document.getElementById('trends-content');
+  if (!logs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-text">Log check-ins to see trends</div></div>'; return; }
+  var sorted = logs.slice().sort(function(a,b) { return a.key > b.key ? 1 : -1; });
+  var metrics = [
+    {k:'pain', label:'SESSION PAIN', unit:'/10', max:10, low:true},
+    {k:'swell', label:'KNEE SWELLING', unit:'/3', max:3, low:true},
+    {k:'sleep', label:'SLEEP HOURS', unit:'hrs', max:10, low:false},
+    {k:'grip', label:'GRIP STRENGTH', unit:'/10', max:10, low:false}
+  ];
+  var html = '';
+  metrics.forEach(function(m) {
+    var vals = sorted.filter(function(l) { return l[m.k] !== undefined; }).map(function(l) { return {d: l.date || l.key, v: l[m.k]}; });
+    if (!vals.length) return;
+    var latest = vals[vals.length-1].v;
+    var prev = vals.length > 1 ? vals[vals.length-2].v : null;
+    var arrow = prev !== null ? (latest > prev ? '↑' : latest < prev ? '↓' : '→') : '';
+    var arrowColor = prev !== null ? (m.low ? (latest < prev ? 'var(--green)' : latest > prev ? 'var(--red)' : 'var(--text-mid)') : (latest > prev ? 'var(--green)' : latest < prev ? 'var(--red)' : 'var(--text-mid)')) : 'var(--text-mid)';
+    var H = 80, W = 300;
+    var pts = vals.map(function(v, i) {
+      var x = vals.length === 1 ? W/2 : (i/(vals.length-1))*W;
+      var y = H - (v.v/m.max)*H;
+      return x + ',' + y;
+    }).join(' ');
+    html += '<div class="trend-block"><div class="trend-header">' +
+      '<div class="trend-name">' + m.label + '</div>' +
+      '<div style="display:flex;align-items:baseline;gap:6px;"><div class="trend-current">' + latest + m.unit + '</div>' +
+      '<div style="font-size:14px;font-weight:700;color:' + arrowColor + ';">' + arrow + '</div></div></div>' +
+      '<div class="chart-wrap"><svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' +
+      (vals.length > 1 ?
+        '<polyline points="' + pts + '" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>' +
+        '<polygon points="' + pts + ' ' + W + ',' + H + ' 0,' + H + '" fill="rgba(168,255,120,0.1)"/>' :
+        '<circle cx="' + W/2 + '" cy="' + (H-(vals[0].v/m.max)*H) + '" r="5" fill="var(--green)"/>') +
+      '</svg></div>' +
+      '<div class="chart-labels">' + vals.map(function(v) { var p = v.d.split(' '); return '<span>' + (p[0]||'') + ' ' + (p[1]||'') + '</span>'; }).join('') + '</div></div>';
+  });
+  el.innerHTML = html || '<div class="empty-state"><div class="empty-icon">📈</div><div class="empty-text">Log check-ins to see trends</div></div>';
+}
+
+function renderHistory() {
+  var logs = gs('logs', []);
+  var el = document.getElementById('history-content');
+  if (!logs.length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No check-ins yet</div></div>'; return; }
+  var sorted = logs.slice().sort(function(a,b) { return a.key > b.key ? -1 : 1; });
+  el.innerHTML = sorted.map(function(l) {
+    var chips = [];
+    if (l.pain !== undefined) chips.push('<div class="chip">' + (l.pain <= 1 ? '<span style="color:var(--green)">' : l.pain <= 3 ? '<span style="color:var(--yellow)">' : '<span style="color:var(--red)">') + 'Pain ' + l.pain + '/10</span></div>');
+    if (l.swell !== undefined) chips.push('<div class="chip">Swell ' + l.swell + '/3</div>');
+    if (l.sleep !== undefined) chips.push('<div class="chip ' + (l.sleep >= 9 ? 'chip-green' : '') + '">' + l.sleep + 'h sleep</div>');
+    if (l.grip !== undefined) chips.push('<div class="chip">Grip ' + l.grip + '/10</div>');
+    if (l.miles !== undefined && l.miles > 0) chips.push('<div class="chip chip-green">' + l.miles + ' mi</div>');
+    if (l.collagen === 'yes') chips.push('<div class="chip chip-green">Collagen ✓</div>');
+    if (l.session) chips.push('<div class="chip">Session: ' + l.session + '</div>');
+    return '<div class="log-entry"><div class="log-date">' + (l.date || l.key) + '</div><div class="log-chips">' + chips.join('') + '</div>' +
+      (l.notes ? '<div class="log-notes">' + l.notes + '</div>' : '') + '</div>';
+  }).join('');
+}
+
+function openCheckin() {
+  ciData = {};
+  var f = document.getElementById('ci-form');
+  f.innerHTML = buildQ('Morning Grip Strength', 'Rate 1–10 on waking (before coffee)', 'grip',
+    [1,2,3,4,5,6,7,8,9,10], function(n) { return n >= 7 ? 'green' : n >= 4 ? 'yellow' : 'red'; }) +
+    buildQ('Morning Knee Swelling', 'At rest before movement (0=none, 3=significant)', 'swell',
+    [0,1,2,3], function(n) { return n === 0 ? 'green' : n <= 1 ? 'yellow' : 'red'; }) +
+    buildQ('Pain During Session', '0 = none, 10 = worst imaginable', 'pain',
+    [0,1,2,3,4,5,6,7,8,9,10], function(n) { return n === 0 ? 'green' : n <= 2 ? 'yellow' : 'red'; }) +
+    buildQ('Sleep Last Night', 'Total hours in bed', 'sleep',
+    [5,6,7,7.5,8,8.5,9,9.5,10], function(n) { return n >= 9 ? 'green' : n >= 7.5 ? 'yellow' : 'red'; }) +
+    buildQ('Miles Today', 'Enter 0 if no run', 'miles',
+    [0,0.5,1,1.5,2,2.5,3], function() { return 'green'; }) +
+    '<div class="checkin-question"><span class="checkin-label" style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;display:block;">Session Completed?</span>' +
+    '<div class="toggle-row">' +
+    '<button class="toggle-btn" onclick="selToggle(\'session\',\'yes\',this,\'green\')">YES ✓</button>' +
+    '<button class="toggle-btn" onclick="selToggle(\'session\',\'partial\',this,\'yellow\')">PARTIAL</button>' +
+    '<button class="toggle-btn" onclick="selToggle(\'session\',\'no\',this,\'red\')">NO ✗</button></div></div>' +
+    '<div class="checkin-question"><span class="checkin-label" style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;display:block;">Collagen + Vit C taken 45 min pre?</span>' +
+    '<div class="toggle-row">' +
+    '<button class="toggle-btn" onclick="selToggle(\'collagen\',\'yes\',this,\'green\')">YES ✓</button>' +
+    '<button class="toggle-btn" onclick="selToggle(\'collagen\',\'no\',this,\'red\')">NO ✗</button></div></div>' +
+    '<div class="checkin-question"><span class="checkin-label" style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;display:block;">Notes (optional)</span>' +
+    '<textarea class="notes-input" id="ci-notes" placeholder="Knee feel, energy, anything notable..."></textarea></div>' +
+    '<button class="submit-btn" onclick="submitCI()">SAVE CHECK-IN</button>';
+  openMod('ci-modal');
+}
+
+function buildQ(label, sub, key, vals, colorFn) {
+  return '<div class="checkin-question">' +
+    '<span class="checkin-label" style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;display:block;">' + label + '</span>' +
+    '<span class="checkin-sub" style="font-size:11px;color:var(--text-dim);margin-bottom:10px;display:block;">' + sub + '</span>' +
+    '<div class="slider-track" id="track-' + key + '">' +
+    vals.map(function(n) {
+      return '<button class="slider-btn" onclick="selVal(\'' + key + '\',' + n + ',this,\'' + colorFn(n) + '\')">' + n + '</button>';
+    }).join('') + '</div></div>';
+}
+
+function selVal(key, val, btn, color) {
+  ciData[key] = val;
+  var track = document.getElementById('track-' + key);
+  if (!track) return;
+  var btns = track.querySelectorAll('.slider-btn');
+  for (var i=0; i<btns.length; i++) btns[i].className = 'slider-btn';
+  btn.className = 'slider-btn sel-' + color;
+}
+
+function selToggle(key, val, btn, color) {
+  ciData[key] = val;
+  var row = btn.parentElement;
+  var btns = row.querySelectorAll('.toggle-btn');
+  for (var i=0; i<btns.length; i++) btns[i].className = 'toggle-btn';
+  btn.className = 'toggle-btn sel-' + color;
+}
+
+function submitCI() {
+  var notes = (document.getElementById('ci-notes') || {}).value || '';
+  var e = todayEntry();
+  var entry = { key: todayKey(), date: e.date, notes: notes };
+  for (var k in ciData) entry[k] = ciData[k];
+  entry.ts = Date.now();
+  var logs = gs('logs', []);
+  var idx = -1;
+  for (var i=0; i<logs.length; i++) { if (logs[i].key === entry.key) { idx = i; break; } }
+  if (idx >= 0) logs[idx] = entry; else logs.push(entry);
+  ss('logs', logs);
+  closeMod('ci-modal');
+  renderToday(); renderWeek(); renderTrends(); renderHistory();
+  var btn = document.getElementById('checkin-open-btn');
+  if (btn) { btn.textContent = '✓ LOGGED'; setTimeout(function() { btn.textContent = 'LOG TODAY\'S CHECK-IN'; }, 2000); }
+}
+
+function openMod(id) { document.getElementById(id).classList.add('open'); }
+function closeMod(id) { document.getElementById(id).classList.remove('open'); }
+function overlayClose(e, id) { if (e.target === e.currentTarget) closeMod(id); }
+
+function showPage(name, btn) {
+  var pages = document.querySelectorAll('.page');
+  for (var i=0; i<pages.length; i++) pages[i].classList.remove('active');
+  document.getElementById('page-' + name).classList.add('active');
+  var btns = document.querySelectorAll('.nav-btn');
+  for (var i=0; i<btns.length; i++) btns[i].classList.remove('active');
+  btn.classList.add('active');
+  document.getElementById('content').scrollTop = 0;
+}
+
+init();
+</script>
+
+
+</body></html>
