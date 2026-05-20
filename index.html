@@ -229,6 +229,9 @@ textarea.notes-input:focus { outline:none; border-color:var(--green); }
 <div class="modal-overlay" id="day-modal" onclick="overlayClose(event,'day-modal')">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
+    <div style="display:flex;justify-content:flex-end;padding:0 16px 0;margin-top:-8px;">
+      <button onclick="closeMod('day-modal')" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);font-size:13px;font-weight:600;padding:6px 16px;border-radius:20px;cursor:pointer;font-family:-apple-system,sans-serif;">✕ Close</button>
+    </div>
     <div id="day-modal-body"></div>
   </div>
 </div>
